@@ -97,7 +97,7 @@ if (-not (Test-Path (Join-Path $RepoRoot "pdfarranger\pdfarranger.py"))) {
     throw "This script must live in <repo>\dev\windows\. Could not find pdfarranger\pdfarranger.py under $RepoRoot"
 }
 if ($RepoRoot -match "OneDrive") {
-    Write-Warning "The repo is inside OneDrive. Sync can lock files during builds; C:\dev\ is a better home."
+    Write-Warning "The repo is inside OneDrive. Sync can lock files during builds; C:\Development\ is a better home."
 }
 
 # --------------------------------------------------------------------------

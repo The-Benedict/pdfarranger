@@ -26,12 +26,12 @@ pikepdf has to be built against the same toolchain. The python.org Python
 2. **Clone** your fork to a short path with no spaces and outside OneDrive. Keep the
    folder name `pdfarranger` so the shared run configurations find their module:
    ```powershell
-   mkdir C:\dev; cd C:\dev
+   mkdir C:\Development; cd C:\Development
    git clone https://github.com/<you>/pdfarranger.git
    cd pdfarranger
    git remote add upstream https://github.com/pdfarranger/pdfarranger.git
    ```
-   (Or use PyCharm: *File → Project from Version Control*, directory `C:\dev\pdfarranger`.)
+   (Or use PyCharm: *File → Project from Version Control*, directory `C:\Development\pdfarranger`.)
 3. **Run the setup script** from a normal PowerShell window in the repo root:
    ```powershell
    powershell -ExecutionPolicy Bypass -File dev\windows\setup.ps1
@@ -41,7 +41,7 @@ pikepdf has to be built against the same toolchain. The python.org Python
    It is safe to re-run. Use `-SkipUpdate` to skip `pacman -Syu` and `-SkipTests` to skip the tests.
 4. **Open the folder in PyCharm** and set the interpreter:
    *Settings → Project → Python Interpreter → Add Interpreter → Add Local Interpreter →
-   Select existing → Python →* `C:\dev\pdfarranger\.venv\bin\python.exe`
+   Select existing → Python →* `C:\Development\pdfarranger\.venv\bin\python.exe`
    (the script prints the exact path; on some MSYS2 versions it's `.venv\Scripts\python.exe`).
    If PyCharm prompts to install `packaging` tools, decline (see the pip warning below).
 5. **Mark directories**: right-click `tests` → *Mark Directory as → Test Sources Root*;
