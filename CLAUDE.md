@@ -7,8 +7,8 @@ setup steps and the code map live in `DEVELOPING.md`. Read those before explorin
 
 ## Owner's environment
 - Windows 11, PyCharm, repo at `C:\Development\pdfarranger`
-- Interpreter: MSYS2 MINGW64 Python via `.venv` (created by `dev\windows\setup.ps1`)
-- Never `pip install` compiled packages; runtime dependencies come from `pacman -S mingw-w64-x86_64-python-<name>`
+- Interpreter: MSYS2 UCRT64 Python via `.venv` (created by `dev\windows\setup.ps1`)
+- Never `pip install` compiled packages; runtime dependencies come from `pacman -S mingw-w64-ucrt-x86_64-python-<name>`
   and must be added to `$Packages` in `dev/windows/setup.ps1`
 
 ## Commands (run from the repo root)

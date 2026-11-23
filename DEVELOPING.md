@@ -17,8 +17,8 @@ sheet music. See [ROADMAP.md](ROADMAP.md) for the feature plan.
 **Why MSYS2?** PDF Arranger is a GTK 3 app. On Windows, GTK, Poppler, and the
 Python bindings for both (`gi`, `cairo`) only exist as MSYS2 packages, and
 pikepdf has to be built against the same toolchain. The python.org Python
-**cannot** run this app. Everything runs on `C:\msys64\mingw64\bin\python.exe`
-(this matches how upstream builds its Windows installer).
+**cannot** run this app. Everything runs on `C:\msys64\ucrt64\bin\python.exe`
+(MSYS2 deprecated the MINGW64 environment upstream still documents, so this fork uses UCRT64).
 
 ### Steps
 
@@ -66,12 +66,12 @@ project interpreter. That happens when the folder isn't named `pdfarranger`.
 
 `.venv` is created with `--system-site-packages`, so it *sees* everything pacman
 installed into MSYS2, and it adds a small `msys2_gtk_dlls.pth` hook that puts
-`C:\msys64\mingw64\bin` on the DLL search path for every process (app, tests,
+`C:\msys64\ucrt64\bin` on the DLL search path for every process (app, tests,
 debugger, multiprocessing export workers).
 
 > ⚠️ **Never `pip install` a package with compiled code into this venv.** MSYS2's
 > Python can't use PyPI's Windows wheels. New runtime dependencies come from
-> pacman: `pacman -S mingw-w64-x86_64-python-<name>` in the *MSYS2 MINGW64*
+> pacman: `pacman -S mingw-w64-ucrt-x86_64-python-<name>` in the *MSYS2 UCRT64*
 > shell, then add them to `$Packages` in `dev/windows/setup.ps1` so the setup stays
 > reproducible. Pure-Python dev tools (like `pygobject-stubs`, which the script
 > installs for Gtk autocompletion) are fine.

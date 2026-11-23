@@ -5,7 +5,7 @@
 .DESCRIPTION
     1. Installs MSYS2 (via winget) if it is not already at -MsysRoot.
     2. Updates MSYS2 and installs GTK3, Poppler, pikepdf, img2pdf, etc. into
-       the MINGW64 environment with pacman (these have C extensions and must
+       the UCRT64 environment with pacman (these have C extensions and must
        come from MSYS2, not PyPI).
     3. Creates .venv in the repo root, inheriting MSYS2's site-packages, and
        drops a .pth hook into it so every run (PyCharm, tests, debugger,
@@ -32,35 +32,36 @@ param(
 $ErrorActionPreference = "Stop"
 
 $RepoRoot    = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
-$MingwBin    = Join-Path $MsysRoot "mingw64\bin"
+$MingwBin    = Join-Path $MsysRoot "ucrt64\bin"
 $MingwPython = Join-Path $MingwBin "python.exe"
 $Bash        = Join-Path $MsysRoot "usr\bin\bash.exe"
 $Venv        = Join-Path $RepoRoot ".venv"
 
-# Everything PDF Arranger needs at runtime, plus build/test tooling.
-# Upstream's list lives in Win32.md; keep the two in sync when rebasing.
+# Everything PDF Arranger needs at runtime, plus build/test tooling, from the
+# UCRT64 environment. (Upstream's Win32.md still says MINGW64, which MSYS2
+# deprecated in March 2026 and is dropping packages from.)
 $Packages = @(
-    "mingw-w64-x86_64-gtk3"
-    "mingw-w64-x86_64-libhandy"
-    "mingw-w64-x86_64-poppler"
-    "mingw-w64-x86_64-qpdf"
-    "mingw-w64-x86_64-gettext"
-    "mingw-w64-x86_64-gnutls"
-    "mingw-w64-x86_64-python"
-    "mingw-w64-x86_64-python-pip"
-    "mingw-w64-x86_64-python-setuptools"
-    "mingw-w64-x86_64-python-gobject"
-    "mingw-w64-x86_64-python-cairo"
-    "mingw-w64-x86_64-python-lxml"
-    "mingw-w64-x86_64-python-pillow"
-    "mingw-w64-x86_64-python-dateutil"
-    "mingw-w64-x86_64-python-packaging"
-    "mingw-w64-x86_64-python-pikepdf"
-    "mingw-w64-x86_64-img2pdf"
-    "mingw-w64-x86_64-python-pytest"
-    "mingw-w64-x86_64-python-coverage"
-    "mingw-w64-x86_64-python-cx-freeze"   # only needed to build the .msi/.zip installer
-)
+    "gtk3"
+    "libhandy"
+    "poppler"
+    "qpdf"
+    "gettext"
+    "gnutls"
+    "python"
+    "python-pip"
+    "python-setuptools"
+    "python-gobject"
+    "python-cairo"
+    "python-lxml"
+    "python-pillow"
+    "python-dateutil"
+    "python-packaging"
+    "python-pikepdf"
+    "img2pdf"
+    "python-pytest"
+    "python-coverage"
+    "python-cx-freeze"   # only needed to build the .msi/.zip installer
+) | ForEach-Object { "mingw-w64-ucrt-x86_64-$_" }
 
 function Write-Step([string]$Message) {
     Write-Host ""
@@ -85,7 +86,7 @@ function Invoke-Native([scriptblock]$Command, [string]$What, [switch]$AllowFailu
 }
 
 function Invoke-Msys([string]$MsysCommand, [string]$What, [switch]$AllowFailure) {
-    $env:MSYSTEM = "MINGW64"
+    $env:MSYSTEM = "UCRT64"
     $env:CHERE_INVOKING = "1"
     $block = { & $Bash -lc $MsysCommand }.GetNewClosure()
     $null = Invoke-Native $block $What -AllowFailure:$AllowFailure
@@ -124,7 +125,7 @@ if (-not $SkipUpdate) {
     Invoke-Msys "pacman -Syu --noconfirm" "pacman -Syu (pass 2)"
 }
 
-Write-Step "Installing MINGW64 packages"
+Write-Step "Installing UCRT64 packages"
 Invoke-Msys ("pacman -S --needed --noconfirm " + ($Packages -join " ")) "pacman -S"
 
 if (-not (Test-Path $MingwPython)) {
