@@ -3,3 +3,9 @@ venv/
 tests/exporter/out.pdf
 build/
 pdfarranger.egg-info/
+
+# Fork: local dev environment
+.venv/
+# Share PyCharm run configurations, keep the rest of .idea personal
+.idea/*
+!.idea/runConfigurations/
