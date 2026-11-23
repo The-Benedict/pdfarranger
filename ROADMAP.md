@@ -1,4 +1,4 @@
-# Roadmap (draft v0.2, 2026-11-23)
+# Roadmap (draft v0.3, 2026-11-23)
 
 Goal: match macOS Preview's page manipulation and markup, then go beyond it with
 tools built for managing digital sheet music. Built on PDF Arranger 1.14.0 (GPL-3.0).
@@ -18,11 +18,16 @@ Status key: ☐ not started · ◐ in progress · ☑ done · ❓ needs a decisi
 
 ---
 
-## Phase 0: Workspace ◐
-- ☑ Windows/MSYS2 setup script, PyCharm run configs, dev guide
+## Phase 0: Workspace ☑
+- ☑ Windows/MSYS2 (UCRT64) setup script, PyCharm run configs, dev guide, CLAUDE.md
 - ☑ Baseline: 89 unit tests green on upstream 1.14.0
-- ☐ Fork created, kit pushed, GitHub Actions enabled on the fork
-- ☐ Ben runs `setup.ps1` on his desktop and launches the app from PyCharm
+- ☑ Fork created, kit pushed, GitHub Actions enabled on the fork
+- ☑ App runs from PyCharm on Ben's desktop
+
+## Next up: Page view ◐ (design: `docs/design/page-view.md`)
+- ☐ Single-page view with a thumbnail sidebar (Preview/Okular style), as a mode of the main window
+- ☐ Shared page-compositing function (`pagerender.draw_page`) used by thumbnails and the page view
+- ☐ This view becomes the canvas for the page editor (Phase 2) and the markup tools (Phase 3)
 
 ## Phase 1: Stamp engine (foundation for priorities 3–5 and later markup)
 - ☐ `Stamp` model on `Page`: content (text, SMuFL music symbol, image, or simple shape),
@@ -41,7 +46,7 @@ Status key: ☐ not started · ◐ in progress · ☑ done · ❓ needs a decisi
   tokens such as `{page}`, `{pages}`, `{part}`, `{title}`, `{file}`
 - ☐ **Music symbol palette**: Bravura (SMuFL, OFL license) bundled; searchable glyph
   picker (breath mark, fermata, accidentals, dynamics, glasses, V.S., cut brackets, vi-de)
-- ☐ **Minimal page editor**: double-click a thumbnail to open the page large, click to place
+- ☐ **Minimal page editor** (built on the page view): click to place
   stamps, drag/resize/rotate them, delete, nudge with the arrow keys (seeded from `DrawingAreaWidget`)
 - ☐ **Rehearsal marks and measure numbers**: a click-to-place tool with auto-increment
   (A, B, C… / 1, 2, 3…), a boxed, circled or plain style, and a style preset per ensemble
