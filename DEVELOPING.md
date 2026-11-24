@@ -108,7 +108,8 @@ debugger, multiprocessing export workers).
 | `pdfarranger/exporter_outlines.py` | Bookmarks/outlines on export | Part and movement bookmarks |
 | `pdfarranger/splitter.py`, `search.py` | Split-page dialog, text search | |
 | `data/pdfarranger.ui`, `data/menu.ui` | GtkBuilder UI and menus | Toolbar and menu entries |
-| `tests/` | `test_core.py`, `test_exporter.py`, `test_exporter_outlines.py` (cross-platform); `test.py` (dogtail GUI, Linux only) | |
+| `pdfarranger/pagerender.py`, `pageview.py` (fork) | `draw_page()` composites a page for thumbnails and the page view; `PageView` shows one page large (fit/zoom, background render, cache). Demo: `python -m pdfarranger.pageview file.pdf` | Page editor canvas; overlay hook for stamps and markup |
+| `tests/` | `test_core.py`, `test_exporter.py`, `test_exporter_outlines.py`, `test_pagerender.py`, `test_pageview.py` (cross-platform); `test.py` (dogtail GUI, Linux only) | |
 
 ### Architectural facts to design around
 
