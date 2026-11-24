@@ -14,7 +14,7 @@ setup steps and the code map live in `DEVELOPING.md`. Read those before explorin
 ## Commands (run from the repo root)
 - Run: `python -m pdfarranger tests/test.pdf`
 - Build translations: `python setup.py build`
-- Tests: `python -m unittest -v tests.test_core tests.test_exporter` and
+- Tests: `python -m unittest -v tests.test_core tests.test_exporter tests.test_pagerender tests.test_pageview` and
   `python -m pytest -q tests/test_exporter_outlines.py`
 - GUI tests (`tests.test`, dogtail) are Linux-only
 

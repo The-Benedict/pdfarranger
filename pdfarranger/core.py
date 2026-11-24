@@ -43,8 +43,7 @@ from gi.repository import GObject, GLib, Gtk, Gio
 
 gi.require_version("Poppler", "0.18")
 from gi.repository import Poppler  # for the rendering of pdf pages
-import cairo
-from math import pi
+from . import pagerender
 
 
 try:
@@ -889,55 +888,13 @@ class PDFRenderer(threading.Thread, GObject.GObject):
         self.mem_usage += size[0] * size[1] * 4 / (1024 * 1024)  # 4 byte/pixel
         return False
 
-    def render(self, cr, p):
-        if self.quit:
-            return
-        pdfdoc = self.pdfqueue[p.nfile - 1]
-        page = pdfdoc.get_page(p.npage - 1)
-        with pdfdoc.render_lock:
-            page.render(cr)
-
     def update(self, p: Page, ref, zoom, is_preview):
         """Render and emit updated thumbnails."""
         if (is_preview and p.preview) and (p.resample != -1):
             # Reuse the preview if it exist, unless it is marked for re-render
             thumbnail = p.preview
         else:
-            wpoi = p.size.width * (1 - p.crop.left - p.crop.right)
-            hpoi = p.size.height * (1 - p.crop.top - p.crop.bottom)
-            wpix = max(1, int(0.5 + wpoi * p.scale * zoom))
-            hpix = max(1, int(0.5 + hpoi * p.scale * zoom))
-            wpix0, hpix0 = (wpix, hpix) if p.angle in [0, 180] else (hpix, wpix)
-            rotation = round((int(p.angle) % 360) / 90) * 90
-
-            thumbnail = cairo.ImageSurface(cairo.FORMAT_ARGB32, wpix0, hpix0)
-            cr = cairo.Context(thumbnail)
-            if rotation > 0:
-                cr.translate(wpix0 / 2, hpix0 / 2)
-                cr.rotate(-rotation * pi / 180)
-                cr.translate(-wpix / 2, -hpix / 2)
-            cr.scale(wpix / wpoi, hpix / hpoi)
-            cr.translate(-p.crop.left * p.size.width, -p.crop.top * p.size.height)
-            self.add_layers(cr, p, layer='UNDERLAY')
-            cr.save()
-            if rotation > 0:
-                cr.translate(*p.size.scaled(0.5))
-                cr.rotate(rotation * pi / 180)
-                cr.translate(*p.size_orig.scaled(-0.5))
-            self.render(cr, p)
-            cr.restore()
-            self.add_layers(cr, p, layer='OVERLAY')
-
-            if p.hide != Sides():
-                cr.set_source_rgb(1, 1, 1)
-                cr.rectangle(0, 0, p.size.width, p.size.height)
-                x = p.size.width * p.hide.left
-                y = p.size.height * p.hide.top
-                w = p.size.width * (1 - p.hide.left - p.hide.right)
-                h = p.size.height * (1 - p.hide.top - p.hide.bottom)
-                cr.rectangle(x, y, w, h)
-                cr.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
-                cr.fill()
+            thumbnail = pagerender.render_page(p, self.pdfqueue, zoom, lambda: self.quit)
 
         if self.quit:
             return 0, 0
@@ -958,31 +915,6 @@ class PDFRenderer(threading.Thread, GObject.GObject):
             priority=GObject.PRIORITY_LOW,
         )
         return thumbnail.get_width(), thumbnail.get_height()
-
-    def add_layers(self, cr, p: Page, layer):
-        layerpages = p.layerpages if layer == 'OVERLAY' else reversed(p.layerpages)
-        for lp in layerpages:
-            if self.quit:
-                return
-            if layer != lp.laypos:
-                continue
-            cr.save()
-            cr.translate(p.size.width * lp.offset.left, p.size.height * lp.offset.top)
-            cr.scale(lp.scale / p.scale, lp.scale / p.scale)
-            x = lp.size.width * lp.crop.left
-            y = lp.size.height * lp.crop.top
-            w = lp.size.width * (1 - lp.crop.left - lp.crop.right)
-            h = lp.size.height * (1 - lp.crop.top - lp.crop.bottom)
-            cr.translate(-x, -y)
-            cr.rectangle(x, y, w, h)
-            cr.clip()
-            rotation = round((int(lp.angle) % 360) / 90) * 90
-            if rotation > 0:
-                cr.translate(*lp.size.scaled(0.5))
-                cr.rotate(rotation * pi / 180)
-                cr.translate(*lp.size_orig.scaled(-0.5))
-            self.render(cr, lp)
-            cr.restore()
 
     def finish(self):
         """Signal rendering ended (for statusbar and malloc_trim)."""

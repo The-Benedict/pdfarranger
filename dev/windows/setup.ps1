@@ -190,8 +190,8 @@ try {
     $null = Invoke-Native { & $VenvPython setup.py build } "setup.py build"
 
     if (-not $SkipTests) {
-        Write-Step "Unit tests: core + exporter"
-        $null = Invoke-Native { & $VenvPython -m unittest -v tests.test_core tests.test_exporter } "unittest"
+        Write-Step "Unit tests: core, exporter, pagerender, pageview"
+        $null = Invoke-Native { & $VenvPython -m unittest -v tests.test_core tests.test_exporter tests.test_pagerender tests.test_pageview } "unittest"
         Write-Step "Unit tests: outlines (pytest)"
         $null = Invoke-Native { & $VenvPython -m pytest -q tests/test_exporter_outlines.py } "pytest"
     }
